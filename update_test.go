@@ -128,3 +128,17 @@ func TestUpdate_UnmarshalJSON(t *testing.T) {
 		}
 	})
 }
+
+func TestUpdate_MarshalJSON(t *testing.T) {
+	update := mongotype.NewUpdate()
+	update.Set("foo", "bar")
+	exp := `{"$set":{"foo":"bar"}}`
+	buf, err := json.Marshal(update)
+	if err != nil {
+		t.Fail()
+	}
+	got := string(buf)
+	if got != exp {
+		t.Errorf("%#v got %q expected %q", update, got, exp)
+	}
+}
