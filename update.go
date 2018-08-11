@@ -41,7 +41,8 @@ func IsUpdateOperator(str string) bool {
 		UpdateOperatorRename,
 		UpdateOperatorSet,
 		UpdateOperatorSetOnInsert,
-		UpdateOperatorUnset} {
+		UpdateOperatorUnset,
+	} {
 		if string(op) == str {
 			return true
 		}
