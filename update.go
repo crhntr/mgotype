@@ -130,12 +130,16 @@ func (update Update) Unset(key string) error {
 
 func (update *Update) UnmarshalJSON(buf []byte) error {
 	err := json.Unmarshal(buf, &update.doc)
-	for opkey, _ := range (*update).doc {
+	for opkey, _ := range update.doc {
 		if !IsUpdateOperator(string(opkey)) {
 			return fmt.Errorf("[ %q ] is not a valid update operator", opkey)
 		}
 	}
 	return err
+}
+
+func (update Update) MarshalJSON() ([]byte, error) {
+	return json.Marshal(update.doc)
 }
 
 func (update Update) Match(other Update) error {
