@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	mongotype "github.com/crhntr/mongotype"
+	"github.com/globalsign/mgo/bson"
 )
 
 func TestUpdate(t *testing.T) {
@@ -141,4 +142,50 @@ func TestUpdate_MarshalJSON(t *testing.T) {
 	if got != exp {
 		t.Errorf("%#v got %q expected %q", update, got, exp)
 	}
+}
+
+func TestUpdate_MarshalingBSON(t *testing.T) {
+	t.Run("when marshaling and unmarshaling the update shoud not change", func(t *testing.T) {
+		update := mongotype.NewUpdate()
+		update.Set("foo", "bar")
+		update.IncrementInt("count", 1)
+		buf, err := bson.Marshal(update)
+		if err != nil {
+			t.Error("it should not return an error")
+		}
+		var got mongotype.Update
+		if err := bson.Unmarshal(buf, &got); err != nil {
+			t.Error(err)
+		}
+		if update.Match(got) != nil {
+			t.Errorf("expected \n%#v \nto equal \n%#v", update, got)
+		}
+	})
+	t.Run("when unmarshling a non-update document", func(t *testing.T) {
+		badUpdate := map[string]int{"$set": 5}
+		buf, err := bson.Marshal(badUpdate)
+		if err != nil {
+			t.Fatal()
+		}
+		var got mongotype.Update
+		if err := bson.Unmarshal(buf, &got); err == nil || err.Error() != "expected json object for key \"$set\"" {
+			t.Error("it should return the correct error")
+		}
+	})
+	t.Run("when unmarshling the wrong type for the document", func(t *testing.T) {
+		type someType struct {
+			Update mongotype.Update `bson:"updateDoc"`
+		}
+		badUpdate := map[string]int{"updateDoc": 5}
+		buf, err := bson.Marshal(badUpdate)
+		if err != nil {
+			t.Fatal()
+		}
+		var got someType
+		if err := bson.Unmarshal(buf, &got); err == nil {
+			t.Error("it should return the correct error error")
+		} else {
+			t.Log(err)
+		}
+	})
 }

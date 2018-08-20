@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+
+	"github.com/globalsign/mgo/bson"
 )
 
 type Update struct {
@@ -140,6 +142,28 @@ func (update *Update) UnmarshalJSON(buf []byte) error {
 
 func (update Update) MarshalJSON() ([]byte, error) {
 	return json.Marshal(update.doc)
+}
+
+func (update Update) GetBSON() (interface{}, error) {
+	return update.doc, nil
+}
+
+func (update *Update) SetBSON(raw bson.Raw) error {
+	doc := make(map[string]interface{})
+	if err := raw.Unmarshal(&doc); err != nil {
+		return err // untested
+	}
+	if update.doc == nil {
+		update.doc = make(map[UpdateOperator]map[string]interface{})
+	}
+	for key, val := range doc {
+		part, ok := val.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("expected json object for key %q", key)
+		}
+		update.doc[UpdateOperator(key)] = part
+	}
+	return nil
 }
 
 func (update Update) Match(other Update) error {
