@@ -203,20 +203,13 @@ func TestUpdate_MarshalingBSON(t *testing.T) {
 			t.Error("it should return the correct error")
 		}
 	})
-	t.Run("when unmarshling the wrong type for the document", func(t *testing.T) {
-		type someType struct {
-			Update mongotype.Update `bson:"updateDoc"`
-		}
-		badUpdate := map[string]int{"updateDoc": 5}
-		buf, err := bson.Marshal(badUpdate)
-		if err != nil {
-			t.Fatal()
-		}
-		var got someType
-		if err := bson.Unmarshal(buf, &got); err == nil {
-			t.Error("it should return the correct error error")
-		} else {
-			t.Log(err)
+	t.Run("when unmarshling bad bson", func(t *testing.T) {
+		var got mongotype.Update
+		if err := got.SetBSON(bson.Raw{
+			Kind: bson.ElementDocument,
+			Data: []byte("not bson"),
+		}); err == nil {
+			t.Error("it should return an error")
 		}
 	})
 }
