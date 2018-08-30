@@ -166,6 +166,13 @@ func TestUpdate_MarshalJSON(t *testing.T) {
 	if got != exp {
 		t.Errorf("%#v got %q expected %q", update, got, exp)
 	}
+
+	t.Run("when unmarshling bad json", func(t *testing.T) {
+		var got mongotype.Update
+		if err := got.UnmarshalJSON([]byte(`{`)); err == nil {
+			t.Error("it should return an error")
+		}
+	})
 }
 
 func TestUpdate_MarshalingBSON(t *testing.T) {
