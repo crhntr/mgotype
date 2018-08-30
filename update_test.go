@@ -9,53 +9,77 @@ import (
 )
 
 func TestUpdate(t *testing.T) {
-	t.Run("when CurrentDate is called", func(t *testing.T) {
+	t.Run("when CurrentDate is called with valid args", func(t *testing.T) {
 		up := mongotype.NewUpdate()
-		up.CurrentDate("last_updated")
+		if err := up.CurrentDate("last_updated"); err != nil {
+			t.Error("it should not return an error")
+		}
 	})
-	t.Run("when CurrentDateAsTimestamp is called", func(t *testing.T) {
+	t.Run("when CurrentDateAsTimestamp is called with valid args", func(t *testing.T) {
 		up := mongotype.NewUpdate()
-		up.CurrentDateAsTimestamp("update_timestamp")
+		if err := up.CurrentDateAsTimestamp("update_timestamp"); err != nil {
+			t.Error("it should not return an error")
+		}
 	})
-	t.Run("when CurrentDateAsDate is called", func(t *testing.T) {
+	t.Run("when CurrentDateAsDate is called with valid args", func(t *testing.T) {
 		up := mongotype.NewUpdate()
-		up.CurrentDateAsDate("last_updated")
+		if err := up.CurrentDateAsDate("last_updated"); err != nil {
+			t.Error("it should not return an error")
+		}
 	})
-	t.Run("when IncrementInt is called", func(t *testing.T) {
+	t.Run("when IncrementInt is called with valid args", func(t *testing.T) {
 		up := mongotype.NewUpdate()
-		up.IncrementInt("update_count", 1)
+		if err := up.IncrementInt("update_count", 1); err != nil {
+			t.Error("it should not return an error")
+		}
 	})
-	t.Run("when IncrementFloat64 is called", func(t *testing.T) {
+	t.Run("when IncrementFloat64 is called with valid args", func(t *testing.T) {
 		up := mongotype.NewUpdate()
-		up.IncrementFloat64("price", 0.1)
+		if err := up.IncrementFloat64("price", 0.1); err != nil {
+			t.Error("it should not return an error")
+		}
 	})
-	t.Run("when Multiply is called", func(t *testing.T) {
+	t.Run("when Multiply is called with valid args", func(t *testing.T) {
 		up := mongotype.NewUpdate()
-		up.Multiply("discount", 0.999)
+		if err := up.Multiply("discount", 0.999); err != nil {
+			t.Error("it should not return an error")
+		}
 	})
-	t.Run("when Minimum is called", func(t *testing.T) {
+	t.Run("when Minimum is called with valid args", func(t *testing.T) {
 		up := mongotype.NewUpdate()
-		up.Minimum("on_order", 100)
+		if err := up.Minimum("on_order", 100); err != nil {
+			t.Error("it should not return an error")
+		}
 	})
-	t.Run("when Maximum is called", func(t *testing.T) {
+	t.Run("when Maximum is called with valid args", func(t *testing.T) {
 		up := mongotype.NewUpdate()
-		up.Maximum("sellable", 1000)
+		if err := up.Maximum("sellable", 1000); err != nil {
+			t.Error("it should not return an error")
+		}
 	})
-	t.Run("when Rename is called", func(t *testing.T) {
+	t.Run("when Rename is called with valid args", func(t *testing.T) {
 		up := mongotype.NewUpdate()
-		up.Rename("sellable", "for_sale")
+		if err := up.Rename("sellable", "for_sale"); err != nil {
+			t.Error("it should not return an error")
+		}
 	})
-	t.Run("when Set is called", func(t *testing.T) {
+	t.Run("when Set is called with valid args", func(t *testing.T) {
 		up := mongotype.NewUpdate()
-		up.Set("description", "this is a product")
+		if err := up.Set("description", "this is a product"); err != nil {
+			t.Error("it should not return an error")
+		}
 	})
-	t.Run("when SetOnInsert is called", func(t *testing.T) {
+	t.Run("when SetOnInsert is called with valid args", func(t *testing.T) {
 		up := mongotype.NewUpdate()
-		up.SetOnInsert("sold", 0)
+		if err := up.SetOnInsert("sold", 0); err != nil {
+			t.Error("it should not return an error")
+		}
 	})
-	t.Run("when Unset is called", func(t *testing.T) {
+	t.Run("when Unset is called with valid args", func(t *testing.T) {
 		up := mongotype.NewUpdate()
-		up.Unset("invisable")
+		if err := up.Unset("invisable"); err != nil {
+			t.Error("it should not return an error")
+		}
 	})
 }
 
