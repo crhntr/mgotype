@@ -1,4 +1,4 @@
-package mongotype_test
+package mgotype_test
 
 import (
 	"encoding/json"

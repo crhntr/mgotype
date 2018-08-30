@@ -1,4 +1,4 @@
-package mongotype
+package mgotype
 
 import (
 	"encoding/json"
