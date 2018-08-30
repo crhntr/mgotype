@@ -22,6 +22,7 @@ func NewUpdate() Update {
 type UpdateOperator string
 
 const (
+	// Field Update Operators
 	UpdateOperatorCurrentDate = UpdateOperator("$currentDate")
 	UpdateOperatorInc         = UpdateOperator("$inc")
 	UpdateOperatorMul         = UpdateOperator("$mul")
