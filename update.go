@@ -168,6 +168,14 @@ func (update *Update) SetBSON(raw bson.Raw) error {
 	return nil
 }
 
+type EachModifier struct {
+	Items []interface{} `json:"$each" bson:"$each"`
+}
+
+func Each(items ...interface{}) EachModifier {
+	return EachModifier{items}
+}
+
 func (update Update) Match(other Update) error {
 	if !reflect.DeepEqual(update.doc, other.doc) {
 		return errors.New("failed deep equal")
