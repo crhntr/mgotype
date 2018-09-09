@@ -13,12 +13,6 @@ type Update struct {
 	doc map[UpdateOperator]map[string]interface{}
 }
 
-func NewUpdate() Update {
-	var update Update
-	update.doc = make(map[UpdateOperator]map[string]interface{})
-	return update
-}
-
 type UpdateOperator string
 
 const (
@@ -62,89 +56,125 @@ func IsUpdateOperator(str string) bool {
 	return false
 }
 
-func ensureUpOp(doc map[UpdateOperator]map[string]interface{}, field UpdateOperator) {
-	if _, ok := doc[field]; !ok {
-		doc[field] = make(map[string]interface{})
+func ensureUpOp(update *Update, field UpdateOperator) {
+	if update.doc == nil {
+		update.doc = make(map[UpdateOperator]map[string]interface{})
+	}
+	if _, ok := update.doc[field]; !ok {
+		update.doc[field] = make(map[string]interface{})
 	}
 }
 
-func (update Update) CurrentDate(field string) error {
-	ensureUpOp(update.doc, UpdateOperatorCurrentDate)
+func (update *Update) CurrentDate(field string) error {
+	ensureUpOp(update, UpdateOperatorCurrentDate)
 	update.doc[UpdateOperatorCurrentDate][field] = true
 	return nil
 }
 
-func (update Update) CurrentDateAsTimestamp(field string) error {
-	ensureUpOp(update.doc, UpdateOperatorCurrentDate)
+func (update *Update) CurrentDateAsTimestamp(field string) error {
+	ensureUpOp(update, UpdateOperatorCurrentDate)
 	update.doc[UpdateOperatorCurrentDate][field] = map[string]string{"$type": "timestamp"}
 	return nil
 }
 
-func (update Update) CurrentDateAsDate(field string) error {
-	ensureUpOp(update.doc, UpdateOperatorCurrentDate)
+func (update *Update) CurrentDateAsDate(field string) error {
+	ensureUpOp(update, UpdateOperatorCurrentDate)
 	update.doc[UpdateOperatorCurrentDate][field] = map[string]string{"$type": "date"}
 	return nil
 }
 
-func (update Update) IncrementInt(field string, amount int) error {
-	ensureUpOp(update.doc, UpdateOperatorInc)
+func (update *Update) IncrementInt(field string, amount int) error {
+	ensureUpOp(update, UpdateOperatorInc)
 	update.doc[UpdateOperatorInc][field] = amount
 	return nil
 }
 
-func (update Update) IncrementFloat64(field string, amount float64) error {
-	ensureUpOp(update.doc, UpdateOperatorInc)
+func (update *Update) IncrementFloat64(field string, amount float64) error {
+	ensureUpOp(update, UpdateOperatorInc)
 	update.doc[UpdateOperatorInc][field] = amount
 	return nil
 }
 
-func (update Update) Multiply(field string, num float64) error {
-	ensureUpOp(update.doc, UpdateOperatorMul)
+func (update *Update) Multiply(field string, num float64) error {
+	ensureUpOp(update, UpdateOperatorMul)
 	update.doc[UpdateOperatorMul][field] = num
 	return nil
 }
 
-func (update Update) Minimum(field string, min float64) error {
-	ensureUpOp(update.doc, UpdateOperatorMin)
+func (update *Update) Minimum(field string, min float64) error {
+	ensureUpOp(update, UpdateOperatorMin)
 	update.doc[UpdateOperatorMin][field] = min
 	return nil
 }
 
-func (update Update) Maximum(field string, max float64) error {
-	ensureUpOp(update.doc, UpdateOperatorMax)
+func (update *Update) Maximum(field string, max float64) error {
+	ensureUpOp(update, UpdateOperatorMax)
 	update.doc[UpdateOperatorMax][field] = max
 	return nil
 }
 
-func (update Update) Rename(oldfield, newfield string) error {
-	ensureUpOp(update.doc, UpdateOperatorRename)
+func (update *Update) Rename(oldfield, newfield string) error {
+	ensureUpOp(update, UpdateOperatorRename)
 	update.doc[UpdateOperatorRename][oldfield] = newfield
 	return nil
 }
 
-func (update Update) Set(field string, value interface{}) error {
-	ensureUpOp(update.doc, UpdateOperatorSet)
+func (update *Update) Set(field string, value interface{}) error {
+	ensureUpOp(update, UpdateOperatorSet)
 	update.doc[UpdateOperatorSet][field] = value
 	return nil
 }
 
-func (update Update) SetOnInsert(field string, value interface{}) error {
-	ensureUpOp(update.doc, UpdateOperatorSetOnInsert)
+func (update *Update) SetOnInsert(field string, value interface{}) error {
+	ensureUpOp(update, UpdateOperatorSetOnInsert)
 	update.doc[UpdateOperatorSetOnInsert][field] = value
 	return nil
 }
 
-func (update Update) Unset(field string) error {
-	ensureUpOp(update.doc, UpdateOperatorUnset)
+func (update *Update) Unset(field string) error {
+	ensureUpOp(update, UpdateOperatorUnset)
 	update.doc[UpdateOperatorUnset][field] = ""
 	return nil
 }
 
-func (update Update) AddToSet(field string) error { return nil }
-func (update Update) Pop(field string) error      { return nil }
-func (update Update) Pull(field string) error     { return nil }
-func (update Update) Push(field string) error     { return nil }
-func (update Update) PullAll(field string) error  { return nil }
+func (update *Update) AddToSet(field string, value interface{}) error {
+	ensureUpOp(update, UpdateOperatorAddToSet)
+	update.doc[UpdateOperatorAddToSet][field] = value
+	return nil
+}
+func (update *Update) PopFirst(field string) error {
+	ensureUpOp(update, UpdateOperatorPop)
+	update.doc[UpdateOperatorPop][field] = -1
+	return nil
+}
+func (update *Update) PopLast(field string) error {
+	ensureUpOp(update, UpdateOperatorPop)
+	update.doc[UpdateOperatorPop][field] = 2
+	return nil
+}
+func (update *Update) Pull(field string, matchingValue interface{}) error {
+	ensureUpOp(update, UpdateOperatorPull)
+	update.doc[UpdateOperatorPull][field] = matchingValue
+	return nil
+}
+func (update *Update) Push(field string, value interface{}) error {
+	ensureUpOp(update, UpdateOperatorPush)
+	update.doc[UpdateOperatorPush][field] = value
+	return nil
+}
+func (update *Update) PushAtPosition(field string, position int, values ...interface{}) error {
+	ensureUpOp(update, UpdateOperatorPush)
+	update.doc[UpdateOperatorPush][field] = struct {
+		Each     []interface{} `json:"$each" bson:"$each"`
+		Position int           `json:"$position" bson:"$position"`
+	}{values, position}
+	return nil
+}
+func (update *Update) PullAll(field string, values ...interface{}) error {
+	ensureUpOp(update, UpdateOperatorPullAll)
+	update.doc[UpdateOperatorPullAll][field] = values
+	return nil
+}
 
 func (update *Update) UnmarshalJSON(buf []byte) error {
 	if err := json.Unmarshal(buf, &update.doc); err != nil {
